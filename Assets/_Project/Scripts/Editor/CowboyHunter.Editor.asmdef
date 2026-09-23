@@ -1,0 +1,7 @@
+{
+    "name": "CowboyHunter.Editor",
+    "rootNamespace": "CowboyHunter.Editor",
+    "references": ["CowboyHunter"],
+    "includePlatforms": ["Editor"],
+    "autoReferenced": false
+}
