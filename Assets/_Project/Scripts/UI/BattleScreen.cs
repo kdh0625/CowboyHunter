@@ -188,7 +188,7 @@ namespace CowboyHunter.UI
                 var enemy = _session.Enemies[i];
                 var view = _enemyViews[i];
                 var s = enemy.Stats;
-                var text = new StringBuilder($"{enemy.Data.displayName}\nHP {s.Hp}/{s.MaxHp}\n보호막 {s.Block}{Statuses(s)}");
+                var text = new StringBuilder($"{enemy.Data.displayName}{(enemy.Data.undead ? "\n<size=70%>[언데드]</size>" : "")}\nHP {s.Hp}/{s.MaxHp}\n보호막 {s.Block}{Statuses(s)}");
                 if (!enemy.IsDead && enemy.HasIntent) text.Append($"\n\n다음 행동: {Describe(enemy.Intent)}");
                 if (enemy.IsDead) text.Append("\n\n쓰러짐");
                 view.GetComponentInChildren<TMP_Text>().text = text.ToString();
@@ -243,7 +243,7 @@ namespace CowboyHunter.UI
             var run = GameSession.Run;
             if (run != null)
             {
-                run.CompleteBattle(won, _session.Player.Hp);
+                run.CompleteBattle(won, _session.Player.Hp, _session.BonusGold);
                 if (won) message += $"\n\n+{run.LastGoldReward} GOLD";
                 if (run.LastRelicReward != null) message += $"\n유물 획득: {run.LastRelicReward.displayName}";
             }
@@ -284,12 +284,14 @@ namespace CowboyHunter.UI
             if (shot.BlockGained > 0) parts.Add($"보호막 +{shot.BlockGained}");
             if (shot.BurnApplied > 0) parts.Add($"화상 +{shot.BurnApplied}");
             if (shot.PoisonApplied > 0) parts.Add($"독 +{shot.PoisonApplied}");
+            if (shot.WeakApplied > 0) parts.Add($"약화 +{shot.WeakApplied}");
+            if (shot.Killed) parts.Add(b.killBonusGold > 0 ? $"처치! +{b.killBonusGold} GOLD" : "처치!");
             return parts.Count > 0 ? " : " + string.Join(", ", parts) : "";
         }
 
         static string Describe(EnemyAction action) => action.type switch
         {
-            EnemyActionType.Attack => $"공격 {action.value}",
+            EnemyActionType.Attack => action.HitCount > 1 ? $"공격 {action.value}×{action.HitCount}" : $"공격 {action.value}",
             EnemyActionType.Block => $"방어 {action.value}",
             EnemyActionType.Poison => $"독 {action.value}",
             _ => action.type.ToString()
@@ -300,6 +302,7 @@ namespace CowboyHunter.UI
             var s = "";
             if (c.Burn > 0) s += $"\n화상 {c.Burn}";
             if (c.Poison > 0) s += $"\n독 {c.Poison}";
+            if (c.Weak > 0) s += $"\n약화 {c.Weak}";
             return s;
         }
     }

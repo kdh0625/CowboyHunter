@@ -10,17 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a486bd104752d71408afaa0e4c3eece4, type: 3}
-  m_Name: Enemy_VenomousScorpion
+  m_Name: Boss_LastOutlaw
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Battle.EnemyData
-  displayName: Venomous Scorpion
+  displayName: The Last Outlaw
   sprite: {fileID: 0}
-  maxHp: 48
-  bounty: 20
+  maxHp: 270
+  bounty: 140
   undead: 0
   pattern:
-  - type: 2
-    value: 2
+  - type: 0
+    value: 10
+    hits: 3
+  - type: 1
+    value: 25
     hits: 0
   - type: 0
-    value: 7
+    value: 18
+    hits: 2
+  - type: 0
+    value: 35
     hits: 0

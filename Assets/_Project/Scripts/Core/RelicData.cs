@@ -22,6 +22,8 @@ namespace CowboyHunter.Core
         public int turnStartBlock;
         [Tooltip("1~6번 슬롯 (0이면 없음)")] public int focusSlot;
         public int focusDamage;
+        public int undeadBonus;
+        public int killGold;
 
         public static string SlotName(RelicSlot slot) => slot switch
         {
@@ -39,6 +41,8 @@ namespace CowboyHunter.Core
             m.BurnBonus += burnBonus;
             m.ExtraDraw += extraDraw;
             m.TurnStartBlock += turnStartBlock;
+            m.UndeadBonus += undeadBonus;
+            m.KillGold += killGold;
             if (focusSlot > 0)
             {
                 m.FocusSlot = focusSlot;

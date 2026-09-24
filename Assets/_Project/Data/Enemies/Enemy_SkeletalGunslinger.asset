@@ -10,17 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a486bd104752d71408afaa0e4c3eece4, type: 3}
-  m_Name: Enemy_VenomousScorpion
+  m_Name: Enemy_SkeletalGunslinger
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Battle.EnemyData
-  displayName: Venomous Scorpion
+  displayName: Skeletal Gunslinger
   sprite: {fileID: 0}
-  maxHp: 48
+  maxHp: 55
   bounty: 20
-  undead: 0
+  undead: 1
   pattern:
-  - type: 2
-    value: 2
+  - type: 0
+    value: 6
+    hits: 2
+  - type: 1
+    value: 6
     hits: 0
   - type: 0
-    value: 7
-    hits: 0
+    value: 6
+    hits: 2

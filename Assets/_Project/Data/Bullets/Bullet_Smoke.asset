@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 310cf392c31798f47959ddf4e5086d45, type: 3}
+  m_Name: Bullet_Smoke
+  m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Battle.BulletData
+  displayName: "\uC5F0\uB9C9\uD0C4"
+  price: 30
+  icon: {fileID: 0}
+  description: "\uBCF4\uD638\uB9C9 9"
+  damage: 0
+  pierce: 0
+  block: 9
+  burn: 0
+  poison: 0
+  weaken: 0
+  bonusVsUndead: 0
+  bonusVsBurning: 0
+  killBonusGold: 0
+  comboPrevious: {fileID: 0}
+  comboBonusDamage: 0

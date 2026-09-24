@@ -14,6 +14,8 @@ namespace CowboyHunter.Battle
         public int BlockGained;
         public int BurnApplied;
         public int PoisonApplied;
+        public int WeakApplied;
+        public bool Killed;
     }
 
     public struct EnemyActionResult
@@ -45,6 +47,8 @@ namespace CowboyHunter.Battle
         public int TargetIndex { get; private set; }
         public BattlePhase Phase { get; private set; } = BattlePhase.AwaitingDraw;
         public int Turn { get; private set; }
+        // 현상금탄·유물로 이번 전투에서 추가로 번 골드
+        public int BonusGold { get; private set; }
 
         readonly List<EnemyUnit> _enemies = new();
         readonly List<BulletData> _hand = new();
@@ -137,18 +141,27 @@ namespace CowboyHunter.Battle
 
         ShotResult Fire(int slot, BulletData bullet, BulletData previous)
         {
-            var target = _enemies[TargetIndex].Stats;
+            var enemy = _enemies[TargetIndex];
+            var target = enemy.Stats;
             int damage = bullet.damage;
             if (damage > 0)
             {
                 damage += _mods.DamageBonus;
                 if (slot == _mods.FocusSlot - 1) damage += _mods.FocusDamage;
+                if (enemy.Data.undead) damage += bullet.bonusVsUndead + _mods.UndeadBonus;
+                if (target.Burn > 0) damage += bullet.bonusVsBurning;
             }
             if (bullet.comboPrevious != null && previous == bullet.comboPrevious)
                 damage += bullet.comboBonusDamage;
 
             var shot = new ShotResult { Slot = slot, Bullet = bullet, TargetIndex = TargetIndex };
             shot.DamageDealt = target.TakeDamage(damage, bullet.pierce);
+            if (shot.DamageDealt > 0 && target.IsDead)
+            {
+                shot.Killed = true;
+                BonusGold += bullet.killBonusGold + _mods.KillGold;
+            }
+            if (bullet.weaken > 0) { shot.WeakApplied = bullet.weaken; target.AddWeak(bullet.weaken); }
             if (bullet.burn > 0) { shot.BurnApplied = bullet.burn + _mods.BurnBonus; target.AddBurn(shot.BurnApplied); }
             if (bullet.poison > 0) { shot.PoisonApplied = bullet.poison; target.AddPoison(shot.PoisonApplied); }
             if (bullet.block > 0) { shot.BlockGained = bullet.block + _mods.BlockBonus; Player.GainBlock(shot.BlockGained); }
@@ -171,7 +184,12 @@ namespace CowboyHunter.Battle
                     r.Action = enemy.Intent;
                     switch (r.Action.type)
                     {
-                        case EnemyActionType.Attack: r.DamageDealt = Player.TakeDamage(r.Action.value); break;
+                        case EnemyActionType.Attack:
+                            // 약화는 이번 공격의 타격마다 적용되고, 공격 후 사라진다.
+                            int perHit = Math.Max(0, r.Action.value - enemy.Stats.Weak);
+                            for (int h = 0; h < r.Action.HitCount && !Player.IsDead; h++) r.DamageDealt += Player.TakeDamage(perHit);
+                            enemy.Stats.ClearWeak();
+                            break;
                         case EnemyActionType.Block: enemy.Stats.GainBlock(r.Action.value); break;
                         case EnemyActionType.Poison: Player.AddPoison(r.Action.value); break;
                     }
