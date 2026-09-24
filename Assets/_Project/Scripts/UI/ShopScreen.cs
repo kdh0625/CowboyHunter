@@ -52,8 +52,10 @@ namespace CowboyHunter.UI
             Refresh();
         }
 
+        // 상점에서 무언가 할 때마다 호출되므로, 여기서 자동 저장한다.
         void Refresh()
         {
+            SaveSystem.Save(_run);
             foreach (var go in _spawned) Destroy(go);
             _spawned.Clear();
             var shop = _run.Shop;

@@ -9,6 +9,7 @@ namespace CowboyHunter.UI
     {
         [SerializeField] RunConfig config;
         [SerializeField] Button newGameButton;
+        [SerializeField] Button continueButton;
 
         void Start()
         {
@@ -16,6 +17,14 @@ namespace CowboyHunter.UI
             {
                 GameSession.Run = new RunState(config, new System.Random());
                 SceneManager.LoadScene(SceneNames.WantedBoard);
+            });
+
+            var saved = SaveSystem.Load(config);
+            continueButton.interactable = saved != null;
+            continueButton.onClick.AddListener(() =>
+            {
+                GameSession.Run = saved;
+                SceneManager.LoadScene(saved.Phase == RunPhase.Shop ? SceneNames.Shop : SceneNames.WantedBoard);
             });
         }
     }

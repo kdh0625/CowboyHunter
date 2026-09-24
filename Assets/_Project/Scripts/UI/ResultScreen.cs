@@ -14,6 +14,7 @@ namespace CowboyHunter.UI
         void Start()
         {
             var run = GameSession.Run;
+            SaveSystem.Delete();   // 런이 끝나면 이어하기 불가
             if (run == null) resultText.text = "진행 중인 런이 없습니다.";
             else if (run.Phase == RunPhase.Cleared) resultText.text = $"현상금 사냥 완료!\n\n획득 골드 {run.Gold}\n남은 체력 {run.PlayerHp}/{run.PlayerMaxHp}";
             else resultText.text = $"쓰러졌다...\n\n{run.Chapter.displayName}, 남은 적 {run.RemainingEnemies}\n획득 골드 {run.Gold}";
