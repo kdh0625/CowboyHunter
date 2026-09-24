@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2017a67f073c9f647b701a9b53257d12, type: 3}
+  m_Name: UiSkin
+  m_EditorClassIdentifier: CowboyHunter::CowboyHunter.UI.UiSkin
+  panel: {fileID: 21300000, guid: 8003e9a94a689264a8e6ca4efcba77cf, type: 3}
+  button: {fileID: 21300000, guid: 35bd2726e2f50ff47b8688cce7730204, type: 3}
+  dark: {fileID: 21300000, guid: 492dab0d0bfdbf14d90ebd1909f582fd, type: 3}

@@ -1,3 +1,4 @@
+using CowboyHunter.Core;
 using UnityEngine;
 
 namespace CowboyHunter.Audio
@@ -11,6 +12,7 @@ namespace CowboyHunter.Audio
         AudioSource[] _sfx;
         AudioSource _music;
         MusicId _currentMusic;
+        float _musicBaseVolume;
         int _nextVoice;
         readonly System.Random _rng = new();
 
@@ -26,7 +28,12 @@ namespace CowboyHunter.Audio
             _music = gameObject.AddComponent<AudioSource>();
             _music.playOnAwake = false;
             _music.loop = true;
+            GameSettings.Changed += ApplyVolume;
         }
+
+        void OnDestroy() => GameSettings.Changed -= ApplyVolume;
+
+        void ApplyVolume() => _music.volume = _musicBaseVolume * GameSettings.MusicVolume;
 
         public void PlaySfx(SoundId id)
         {
@@ -37,7 +44,7 @@ namespace CowboyHunter.Audio
             var voice = _sfx[_nextVoice];
             _nextVoice = (_nextVoice + 1) % _sfx.Length;
             voice.pitch = 1f + (float)(_rng.NextDouble() * 2 - 1) * entry.pitchJitter;
-            voice.PlayOneShot(clip, entry.volume);
+            voice.PlayOneShot(clip, entry.volume * GameSettings.SfxVolume);
         }
 
         // 같은 곡이 이미 나오고 있으면 처음부터 다시 틀지 않는다.
@@ -52,7 +59,8 @@ namespace CowboyHunter.Audio
                 return;
             }
             _music.clip = entry.clip;
-            _music.volume = entry.volume;
+            _musicBaseVolume = entry.volume;
+            ApplyVolume();
             _music.Play();
         }
     }
