@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Boss_LastOutlaw
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Battle.EnemyData
   displayName: The Last Outlaw
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 338729ebb8d56a74cae7bb367c70d9b1, type: 3}
   maxHp: 270
   bounty: 140
   undead: 0

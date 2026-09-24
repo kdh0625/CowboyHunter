@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Relic_LongBarrel
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Core.RelicData
   displayName: "\uAE34 \uCD1D\uC5F4"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 12f2bb92c03f6564dab4d328f4bbcfaf, type: 3}
   description: "\uD53C\uD574\uB97C \uC8FC\uB294 \uD0C4\uC758 \uD53C\uD574 +1"
   slot: 0
   price: 70
@@ -24,3 +24,5 @@ MonoBehaviour:
   turnStartBlock: 0
   focusSlot: 0
   focusDamage: 0
+  undeadBonus: 0
+  killGold: 0

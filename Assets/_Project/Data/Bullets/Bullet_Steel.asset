@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Battle.BulletData
   displayName: "\uAC15\uCCA0\uD0C4"
   price: 40
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 14d332c9330bf754c8a1148007ef2b75, type: 3}
   description: "\uD53C\uD574 10"
   damage: 10
   pierce: 0

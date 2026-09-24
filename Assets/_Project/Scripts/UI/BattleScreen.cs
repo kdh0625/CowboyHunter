@@ -20,6 +20,8 @@ namespace CowboyHunter.UI
         [SerializeField] float stepDelay = 0.35f;
 
         [Header("화면 요소")]
+        [SerializeField] Sprite playerSprite;
+        [SerializeField] UnityEngine.UI.Image playerPortrait;
         [SerializeField] TMP_Text playerText;
         [SerializeField] Transform enemyRow;
         [SerializeField] UnityEngine.UI.Button enemyTemplate;
@@ -34,10 +36,11 @@ namespace CowboyHunter.UI
         [SerializeField] TMP_Text resultText;
         [SerializeField] UnityEngine.UI.Button restartButton;
 
-        static readonly Color NormalColor = new(0.86f, 0.80f, 0.68f);
-        static readonly Color HighlightColor = new(1f, 0.82f, 0.30f);
-        static readonly Color TargetColor = new(0.95f, 0.55f, 0.45f);
-        static readonly Color EmptyColor = new(0.45f, 0.42f, 0.40f);
+        // 스킨 스프라이트에 곱해지는 색
+        static readonly Color NormalColor = Color.white;
+        static readonly Color HighlightColor = new(1f, 0.85f, 0.45f);
+        static readonly Color TargetColor = new(1f, 0.62f, 0.55f);
+        static readonly Color EmptyColor = new(0.6f, 0.57f, 0.55f);
         const int MaxLogLines = 14;
 
         BattleSession _session;
@@ -76,6 +79,7 @@ namespace CowboyHunter.UI
             _selectedHand = -1;
             _log.Clear();
             resultOverlay.SetActive(false);
+            UiSprites.Show(playerPortrait, playerSprite);
 
             foreach (var view in _enemyViews) Destroy(view.gameObject);
             _enemyViews.Clear();
@@ -193,6 +197,9 @@ namespace CowboyHunter.UI
                 if (enemy.IsDead) text.Append("\n\n쓰러짐");
                 view.GetComponentInChildren<TMP_Text>().text = text.ToString();
                 view.image.color = enemy.IsDead ? EmptyColor : i == _session.TargetIndex ? TargetColor : NormalColor;
+                var portrait = UiSprites.Child(view, "Portrait");
+                UiSprites.Show(portrait, enemy.Data.sprite);
+                portrait.color = enemy.IsDead ? new Color(0.3f, 0.3f, 0.3f, 0.6f) : Color.white;
             }
 
             foreach (var view in _handViews) Destroy(view.gameObject);
@@ -205,6 +212,7 @@ namespace CowboyHunter.UI
                 view.gameObject.SetActive(true);
                 view.GetComponentInChildren<TMP_Text>().text = $"{bullet.displayName}\n<size=70%>{bullet.description}</size>";
                 view.image.color = i == _selectedHand ? HighlightColor : NormalColor;
+                UiSprites.Show(UiSprites.Child(view, "Icon"), bullet.icon);
                 view.onClick.AddListener(() => OnBullet(index));
                 _handViews.Add(view);
             }
@@ -222,7 +230,10 @@ namespace CowboyHunter.UI
             for (int i = 0; i < slotButtons.Length; i++)
             {
                 var b = bullets[i];
-                slotButtons[i].GetComponentInChildren<TMP_Text>().text = $"{i + 1}\n{(b != null ? b.displayName : "-")}";
+                var slot = slotButtons[i].transform;
+                slot.Find("Text").GetComponent<TMP_Text>().text = (i + 1).ToString();
+                slot.Find("Name").GetComponent<TMP_Text>().text = b != null ? b.displayName : "";
+                UiSprites.Show(UiSprites.Child(slot, "Icon"), b != null ? b.icon : null);
                 slotButtons[i].image.color = i == firingSlot ? HighlightColor : b != null ? NormalColor : EmptyColor;
             }
         }

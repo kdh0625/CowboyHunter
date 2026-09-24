@@ -19,8 +19,9 @@ namespace CowboyHunter.UI
         [SerializeField] Button posterTemplate;
         [SerializeField] Button bossButton;
 
-        static readonly Color PosterColor = new(0.91f, 0.84f, 0.66f);
-        static readonly Color EliteColor = new(0.95f, 0.70f, 0.45f);
+        // 스킨 스프라이트에 곱해지는 색
+        static readonly Color PosterColor = Color.white;
+        static readonly Color EliteColor = new(1f, 0.78f, 0.55f);
         static readonly Color LockedColor = new(0.55f, 0.55f, 0.55f);
 
         void Start()
@@ -37,16 +38,21 @@ namespace CowboyHunter.UI
                 var view = Instantiate(posterTemplate, posterRow);
                 view.gameObject.SetActive(true);
                 view.image.color = poster.IsElite ? EliteColor : PosterColor;
-                view.GetComponentInChildren<TMP_Text>().text =
-                    $"WANTED\n\n{poster.Enemy.displayName}\n\n{(poster.IsElite ? "[엘리트]\n" : "")}{poster.Bounty} GOLD";
+                view.transform.Find("Text").GetComponent<TMP_Text>().text =
+                    $"{poster.Enemy.displayName}\n{(poster.IsElite ? "[엘리트]  " : "")}{poster.Bounty} GOLD";
+                UiSprites.Show(UiSprites.Child(view, "Portrait"), poster.Enemy.sprite);
                 view.onClick.AddListener(() => { run.Accept(index); SceneManager.LoadScene(SceneNames.Battle); });
             }
 
             bossButton.interactable = run.BossUnlocked;
             bossButton.image.color = run.BossUnlocked ? PosterColor : LockedColor;
-            bossButton.GetComponentInChildren<TMP_Text>().text = run.BossUnlocked
-                ? $"CHAPTER BOSS\n\n{run.BossPoster.Enemy.displayName}\n\n{run.BossPoster.Bounty} GOLD"
-                : "CHAPTER BOSS\n\n???";
+            bossButton.transform.Find("Text").GetComponent<TMP_Text>().text = run.BossUnlocked
+                ? $"{run.BossPoster.Enemy.displayName}\n{run.BossPoster.Bounty} GOLD"
+                : "???";
+            // 잠겨 있을 때는 실루엣만 보여준다
+            var bossPortrait = UiSprites.Child(bossButton, "Portrait");
+            UiSprites.Show(bossPortrait, run.BossPoster.Enemy.sprite);
+            bossPortrait.color = run.BossUnlocked ? Color.white : new Color(0.1f, 0.08f, 0.06f, 0.9f);
             bossButton.onClick.AddListener(() => { run.AcceptBoss(); SceneManager.LoadScene(SceneNames.Battle); });
 
             statusText.text = $"{run.Chapter.displayName} / {run.ChapterCount}   HP {run.PlayerHp}/{run.PlayerMaxHp}   {run.Gold} GOLD";

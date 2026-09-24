@@ -24,7 +24,8 @@ namespace CowboyHunter.UI
         [SerializeField] Button removalTemplate;
         [SerializeField] Button leaveButton;
 
-        static readonly Color ItemColor = new(0.91f, 0.84f, 0.66f);
+        // 스킨 스프라이트에 곱해지는 색
+        static readonly Color ItemColor = Color.white;
         static readonly Color SoldColor = new(0.55f, 0.55f, 0.55f);
 
         readonly List<GameObject> _spawned = new();
@@ -68,13 +69,13 @@ namespace CowboyHunter.UI
                 int index = i;
                 var offer = shop.Bullets[i];
                 AddOffer($"{offer.Bullet.displayName}\n<size=70%>{offer.Bullet.description}</size>\n{offer.Bullet.price} GOLD", offer.Sold,
-                    () => Try(_run.BuyBullet(index), $"{offer.Bullet.displayName}을(를) 탄창에 넣었습니다."));
+                    () => Try(_run.BuyBullet(index), $"{offer.Bullet.displayName}을(를) 탄창에 넣었습니다."), offer.Bullet.icon);
             }
             if (shop.Relic != null)
             {
                 var relic = shop.Relic;
                 AddOffer($"[유물 · {RelicData.SlotName(relic.slot)}]\n{relic.displayName}\n<size=70%>{relic.description}</size>\n{relic.price} GOLD", shop.RelicSold,
-                    () => Try(_run.BuyRelic(), $"{relic.displayName}을(를) 얻었습니다."));
+                    () => Try(_run.BuyRelic(), $"{relic.displayName}을(를) 얻었습니다."), relic.icon);
             }
             AddOffer($"위스키\n<size=70%>체력 {config.whiskeyHeal} 회복</size>\n{config.whiskeyPrice} GOLD", shop.WhiskeySold,
                 () => Try(_run.BuyWhiskey(), "체력을 회복했습니다."));
@@ -89,11 +90,13 @@ namespace CowboyHunter.UI
                     ? $"{RelicData.SlotName(slot)}\n{relic.displayName}\n<size=70%>{relic.description}</size>"
                     : $"{RelicData.SlotName(slot)}\n(비어 있음)";
                 slotButtons[i].image.color = relic != null ? ItemColor : SoldColor;
+                UiSprites.Show(UiSprites.Child(slotButtons[i], "Icon"), relic != null ? relic.icon : null);
             }
 
             foreach (var relic in _run.Inventory)
             {
                 var item = Spawn(inventoryTemplate, inventoryList, $"{relic.displayName} <size=70%>({RelicData.SlotName(relic.slot)})</size>");
+                UiSprites.Show(UiSprites.Child(item, "Icon"), relic.icon);
                 item.onClick.AddListener(() => { _run.Equip(relic); Refresh(); });
             }
 
@@ -112,9 +115,10 @@ namespace CowboyHunter.UI
             }
         }
 
-        void AddOffer(string label, bool sold, UnityEngine.Events.UnityAction onBuy)
+        void AddOffer(string label, bool sold, UnityEngine.Events.UnityAction onBuy, Sprite icon = null)
         {
             var button = Spawn(offerTemplate, offerRow, sold ? label + "\n<size=70%>(판매 완료)</size>" : label);
+            UiSprites.Show(UiSprites.Child(button, "Icon"), icon);
             button.interactable = !sold;
             button.image.color = sold ? SoldColor : ItemColor;
             button.onClick.AddListener(() => { onBuy(); Refresh(); });

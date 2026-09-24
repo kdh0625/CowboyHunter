@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Relic_LeatherGrip
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Core.RelicData
   displayName: "\uAC00\uC8FD \uC190\uC7A1\uC774"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 0a1c5417b5690ea4785d961d1adb5595, type: 3}
   description: "\uBCF4\uD638\uB9C9\uC744 \uC8FC\uB294 \uD0C4\uC758 \uBCF4\uD638\uB9C9 +2"
   slot: 3
   price: 55
@@ -24,3 +24,5 @@ MonoBehaviour:
   turnStartBlock: 0
   focusSlot: 0
   focusDamage: 0
+  undeadBonus: 0
+  killGold: 0

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Enemy_DesertVulture
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Battle.EnemyData
   displayName: Desert Vulture
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 75f21a6c9efedd045ada917fb6af7fa5, type: 3}
   maxHp: 40
   bounty: 15
   undead: 0

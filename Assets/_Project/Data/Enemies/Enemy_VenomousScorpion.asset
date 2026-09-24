@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Enemy_VenomousScorpion
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Battle.EnemyData
   displayName: Venomous Scorpion
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 261b27df5ebe97e4d9dcd03a05a751fa, type: 3}
   maxHp: 48
   bounty: 20
   undead: 0
