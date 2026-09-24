@@ -19,6 +19,7 @@ namespace CowboyHunter.Battle
         public string displayName;
         public Sprite sprite;
         public int maxHp = 30;
+        [Tooltip("처치 시 받는 골드")] public int bounty = 10;
         [Tooltip("위에서부터 순서대로 반복 수행")]
         public List<EnemyAction> pattern = new();
     }

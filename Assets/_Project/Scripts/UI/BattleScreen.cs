@@ -2,15 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using CowboyHunter.Battle;
+using CowboyHunter.Core;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace CowboyHunter.UI
 {
-    // M1 회색 박스 전투 화면. 규칙은 BattleSession이 처리하고, 이 클래스는 입력 전달과 표시만 한다.
+    // 회색 박스 전투 화면. 규칙은 BattleSession이 처리하고, 이 클래스는 입력 전달과 표시만 한다.
+    // 런이 진행 중이면 런의 적/덱/체력을 쓰고, Battle 씬을 단독 실행하면 아래 테스트용 데이터를 쓴다.
     public class BattleScreen : MonoBehaviour
     {
-        [Header("전투 데이터")]
+        [Header("단독 실행용 전투 데이터")]
         [SerializeField] StartingDeckData startingDeck;
         [SerializeField] List<EnemyData> enemies = new();
         [SerializeField] int playerMaxHp = 100;
@@ -52,7 +55,7 @@ namespace CowboyHunter.UI
             bulletTemplate.gameObject.SetActive(false);
             drawButton.onClick.AddListener(OnDraw);
             confirmButton.onClick.AddListener(OnConfirm);
-            restartButton.onClick.AddListener(StartBattle);
+            restartButton.onClick.AddListener(OnResultButton);
             for (int i = 0; i < slotButtons.Length; i++)
             {
                 int slot = i;
@@ -66,7 +69,10 @@ namespace CowboyHunter.UI
         {
             StopAllCoroutines();
             _animating = false;
-            _session = new BattleSession(new Combatant(playerMaxHp), enemies, startingDeck.Build(), new System.Random());
+            var run = GameSession.Run;
+            _session = run != null
+                ? new BattleSession(new Combatant(run.PlayerMaxHp, run.PlayerHp), new[] { run.CurrentTarget.Value.Enemy }, run.Deck, new System.Random())
+                : new BattleSession(new Combatant(playerMaxHp), enemies, startingDeck.Build(), new System.Random());
             _selectedHand = -1;
             _log.Clear();
             resultOverlay.SetActive(false);
@@ -233,9 +239,23 @@ namespace CowboyHunter.UI
             else if (_session.Phase == BattlePhase.Lost) ShowResult($"패배...\n{_session.Turn}턴에서 쓰러짐");
         }
 
+        // 런 중이면 결과를 반영하고 다음 화면으로, 단독 실행이면 전투를 다시 시작한다.
+        void OnResultButton()
+        {
+            var run = GameSession.Run;
+            if (run == null)
+            {
+                StartBattle();
+                return;
+            }
+            run.CompleteBattle(_session.Phase == BattlePhase.Won, _session.Player.Hp);
+            SceneManager.LoadScene(run.Phase == RunPhase.Board ? SceneNames.WantedBoard : SceneNames.Result);
+        }
+
         void ShowResult(string message)
         {
             resultText.text = message;
+            restartButton.GetComponentInChildren<TMP_Text>().text = GameSession.Run != null ? "계속" : "다시 하기";
             resultOverlay.SetActive(true);
         }
 
