@@ -1,3 +1,4 @@
+using CowboyHunter.Audio;
 using CowboyHunter.Core;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -13,8 +14,10 @@ namespace CowboyHunter.UI
 
         void Start()
         {
+            Sound.PlayMusic(MusicId.Title);
             newGameButton.onClick.AddListener(() =>
             {
+                Sound.Play(SoundId.UiClick);
                 GameSession.Run = new RunState(config, new System.Random());
                 SceneManager.LoadScene(SceneNames.WantedBoard);
             });
@@ -23,6 +26,7 @@ namespace CowboyHunter.UI
             continueButton.interactable = saved != null;
             continueButton.onClick.AddListener(() =>
             {
+                Sound.Play(SoundId.UiClick);
                 GameSession.Run = saved;
                 SceneManager.LoadScene(saved.Phase == RunPhase.Shop ? SceneNames.Shop : SceneNames.WantedBoard);
             });
