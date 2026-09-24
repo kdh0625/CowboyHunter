@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a486bd104752d71408afaa0e4c3eece4, type: 3}
-  m_Name: Enemy_PixelBandit
+  m_Name: Enemy_CoyoteChief
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Battle.EnemyData
-  displayName: Pixel Bandit
+  displayName: Coyote Chief
   sprite: {fileID: 0}
-  maxHp: 60
-  bounty: 15
+  maxHp: 120
+  bounty: 60
   pattern:
   - type: 0
-    value: 9
-  - type: 1
-    value: 8
-  - type: 0
     value: 12
+  - type: 1
+    value: 10
+  - type: 0
+    value: 18

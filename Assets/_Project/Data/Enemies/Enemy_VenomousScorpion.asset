@@ -15,6 +15,7 @@ MonoBehaviour:
   displayName: Venomous Scorpion
   sprite: {fileID: 0}
   maxHp: 48
+  bounty: 20
   pattern:
   - type: 2
     value: 2

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8670cdea364ed924eb205fe1dc289ae1, type: 3}
+  m_Name: RunConfig
+  m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Core.RunConfig
+  startingDeck: {fileID: 11400000, guid: 7cf7e406609000e4daeb2f281136da7f, type: 2}
+  playerMaxHp: 100
+  enemiesPerChapter: 5
+  minPosters: 3
+  maxPosters: 5
+  eliteChance: 0.2
+  chapters:
+  - {fileID: 11400000, guid: 97b26695e6f612342924e7c87c7c2bac, type: 2}
+  - {fileID: 11400000, guid: 2d09ac1f3a0298849b6ad643416835f7, type: 2}
+  - {fileID: 11400000, guid: b1dd6bb6c119d1743b3bdf857a6ccb44, type: 2}
+  - {fileID: 11400000, guid: 788f8f7b066367242b376b3da21d5070, type: 2}
