@@ -6,6 +6,7 @@ using CowboyHunter.Battle;
 using CowboyHunter.Core;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 namespace CowboyHunter.UI
@@ -81,7 +82,47 @@ namespace CowboyHunter.UI
             }
         }
 
-        void Start() => StartBattle();
+        void Start()
+        {
+            // Space/Enter를 직접 처리하므로, 마지막으로 누른 버튼이 키보드로 한 번 더 눌리지 않게 막는다.
+            if (UnityEngine.EventSystems.EventSystem.current != null) UnityEngine.EventSystems.EventSystem.current.sendNavigationEvents = false;
+            StartBattle();
+        }
+
+        // PC 단축키. 마우스 조작은 그대로 두고 편의로만 더한다.
+        //   Space/Enter : DRAW → CONFIRM, 결과 창에서는 계속
+        //   1~6         : 고른 탄을 그 슬롯에 장전 (고른 탄이 없으면 그 슬롯의 탄을 뺀다)
+        //   Tab         : 다음 적으로 타겟 변경
+        void Update()
+        {
+            var kb = Keyboard.current;
+            if (kb == null || PauseMenu.IsOpen || _session == null) return;
+
+            bool confirmKey = kb.spaceKey.wasPressedThisFrame || kb.enterKey.wasPressedThisFrame;
+            if (resultOverlay.activeSelf)
+            {
+                if (confirmKey) OnResultButton();
+                return;
+            }
+            if (confirmKey)
+            {
+                if (_session.Phase == BattlePhase.AwaitingDraw) OnDraw();
+                else OnConfirm();
+            }
+            for (int i = 0; i < Cylinder.SlotCount; i++)
+                if (kb[Key.Digit1 + i].wasPressedThisFrame) OnSlot(i);
+            if (kb.tabKey.wasPressedThisFrame) CycleTarget();
+        }
+
+        void CycleTarget()
+        {
+            if (_session.Phase != BattlePhase.Loading) return;
+            for (int step = 1; step <= _session.Enemies.Count; step++)
+            {
+                int next = (_session.TargetIndex + step) % _session.Enemies.Count;
+                if (!_session.Enemies[next].IsDead) { OnEnemy(next); return; }
+            }
+        }
 
         public void StartBattle()
         {

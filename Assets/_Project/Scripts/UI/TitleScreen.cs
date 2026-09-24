@@ -11,6 +11,8 @@ namespace CowboyHunter.UI
         [SerializeField] RunConfig config;
         [SerializeField] Button newGameButton;
         [SerializeField] Button continueButton;
+        [SerializeField] Button settingsButton;
+        [SerializeField] Button quitButton;
 
         void Start()
         {
@@ -21,6 +23,9 @@ namespace CowboyHunter.UI
                 GameSession.Run = new RunState(config, new System.Random());
                 SceneManager.LoadScene(SceneNames.WantedBoard);
             });
+
+            settingsButton.onClick.AddListener(() => PauseMenu.Instance?.Open());
+            quitButton.onClick.AddListener(PauseMenu.QuitGame);
 
             var saved = SaveSystem.Load(config);
             continueButton.interactable = saved != null;
