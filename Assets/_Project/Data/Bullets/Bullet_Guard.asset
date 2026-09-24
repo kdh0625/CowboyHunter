@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Bullet_Guard
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Battle.BulletData
   displayName: "\uBC29\uC5B4\uD0C4"
+  price: 20
   icon: {fileID: 0}
   description: "\uBCF4\uD638\uB9C9 5"
   damage: 0

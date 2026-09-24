@@ -5,6 +5,7 @@ namespace CowboyHunter.Core
         public const string Title = "Title";
         public const string WantedBoard = "WantedBoard";
         public const string Battle = "Battle";
+        public const string Shop = "Shop";
         public const string Result = "Result";
     }
 }

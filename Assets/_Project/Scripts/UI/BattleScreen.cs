@@ -71,7 +71,7 @@ namespace CowboyHunter.UI
             _animating = false;
             var run = GameSession.Run;
             _session = run != null
-                ? new BattleSession(new Combatant(run.PlayerMaxHp, run.PlayerHp), new[] { run.CurrentTarget.Value.Enemy }, run.Deck, new System.Random())
+                ? new BattleSession(new Combatant(run.PlayerMaxHp, run.PlayerHp), new[] { run.CurrentTarget.Value.Enemy }, run.Deck, new System.Random(), run.Modifiers)
                 : new BattleSession(new Combatant(playerMaxHp), enemies, startingDeck.Build(), new System.Random());
             _selectedHand = -1;
             _log.Clear();
@@ -233,13 +233,24 @@ namespace CowboyHunter.UI
             confirmButton.interactable = !_animating && _session.CanConfirm;
         }
 
+        // 전투가 끝나면 런에 결과를 바로 반영하고, 받은 보상을 함께 보여준다.
         void ShowResultIfOver()
         {
-            if (_session.Phase == BattlePhase.Won) ShowResult($"승리!\n{_session.Turn}턴, 남은 체력 {_session.Player.Hp}");
-            else if (_session.Phase == BattlePhase.Lost) ShowResult($"패배...\n{_session.Turn}턴에서 쓰러짐");
+            bool won = _session.Phase == BattlePhase.Won;
+            if (!won && _session.Phase != BattlePhase.Lost) return;
+
+            var message = won ? $"승리!\n{_session.Turn}턴, 남은 체력 {_session.Player.Hp}" : $"패배...\n{_session.Turn}턴에서 쓰러짐";
+            var run = GameSession.Run;
+            if (run != null)
+            {
+                run.CompleteBattle(won, _session.Player.Hp);
+                if (won) message += $"\n\n+{run.LastGoldReward} GOLD";
+                if (run.LastRelicReward != null) message += $"\n유물 획득: {run.LastRelicReward.displayName}";
+            }
+            ShowResult(message);
         }
 
-        // 런 중이면 결과를 반영하고 다음 화면으로, 단독 실행이면 전투를 다시 시작한다.
+        // 런 중이면 다음 화면(상점/결과)으로, 단독 실행이면 전투를 다시 시작한다.
         void OnResultButton()
         {
             var run = GameSession.Run;
@@ -248,8 +259,7 @@ namespace CowboyHunter.UI
                 StartBattle();
                 return;
             }
-            run.CompleteBattle(_session.Phase == BattlePhase.Won, _session.Player.Hp);
-            SceneManager.LoadScene(run.Phase == RunPhase.Board ? SceneNames.WantedBoard : SceneNames.Result);
+            SceneManager.LoadScene(run.Phase == RunPhase.Shop ? SceneNames.Shop : SceneNames.Result);
         }
 
         void ShowResult(string message)
@@ -271,9 +281,9 @@ namespace CowboyHunter.UI
             var b = shot.Bullet;
             var parts = new List<string>();
             if (b.damage > 0) parts.Add($"피해 {shot.DamageDealt}");
-            if (b.block > 0) parts.Add($"보호막 +{b.block}");
-            if (b.burn > 0) parts.Add($"화상 +{b.burn}");
-            if (b.poison > 0) parts.Add($"독 +{b.poison}");
+            if (shot.BlockGained > 0) parts.Add($"보호막 +{shot.BlockGained}");
+            if (shot.BurnApplied > 0) parts.Add($"화상 +{shot.BurnApplied}");
+            if (shot.PoisonApplied > 0) parts.Add($"독 +{shot.PoisonApplied}");
             return parts.Count > 0 ? " : " + string.Join(", ", parts) : "";
         }
 

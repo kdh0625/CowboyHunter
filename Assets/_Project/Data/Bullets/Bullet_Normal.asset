@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Bullet_Normal
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Battle.BulletData
   displayName: "\uC77C\uBC18\uD0C4"
+  price: 10
   icon: {fileID: 0}
   description: "\uD53C\uD574 6"
   damage: 6

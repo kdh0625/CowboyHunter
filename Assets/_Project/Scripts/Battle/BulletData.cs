@@ -6,6 +6,7 @@ namespace CowboyHunter.Battle
     public class BulletData : ScriptableObject
     {
         public string displayName;
+        [Tooltip("상점 가격")] public int price = 20;
         public Sprite icon;
         [TextArea] public string description;
 

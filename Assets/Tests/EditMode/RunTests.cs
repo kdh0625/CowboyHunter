@@ -36,7 +36,7 @@ namespace CowboyHunter.Tests
             return config;
         }
 
-        static void WinNormal(RunState run, int hp = 100) { run.Accept(0); run.CompleteBattle(true, hp); }
+        static void WinNormal(RunState run, int hp = 100) { run.Accept(0); run.CompleteBattle(true, hp); run.LeaveShop(); }
 
         [Test]
         public void NewRun_Deals3To5Posters_AndBuilds40BulletDeck()
@@ -51,11 +51,15 @@ namespace CowboyHunter.Tests
         public void Win_AddsBounty_DecrementsRemaining_KeepsHp()
         {
             var run = new RunState(Config(), new System.Random(1));
-            WinNormal(run, hp: 73);
+            run.Accept(0);
+            run.CompleteBattle(true, 73);
             Assert.AreEqual(10, run.Gold);
             Assert.AreEqual(4, run.RemainingEnemies);
             Assert.AreEqual(73, run.PlayerHp);
+            Assert.AreEqual(RunPhase.Shop, run.Phase);
+            run.LeaveShop();
             Assert.AreEqual(RunPhase.Board, run.Phase);
+            Assert.That(run.Posters.Count, Is.InRange(3, 5));
         }
 
         [Test]
@@ -77,6 +81,7 @@ namespace CowboyHunter.Tests
             for (int i = 0; i < 5; i++) WinNormal(run);
             run.AcceptBoss();
             run.CompleteBattle(true, 50);
+            Assert.AreEqual(RunPhase.Shop, run.Phase);
             Assert.AreEqual(1, run.ChapterIndex);
             Assert.AreEqual(5, run.RemainingEnemies);
             Assert.AreEqual(50, run.PlayerHp);

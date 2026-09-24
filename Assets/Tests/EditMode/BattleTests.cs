@@ -168,6 +168,38 @@ namespace CowboyHunter.Tests
             Assert.AreEqual(5, s.Enemies[0].Stats.Burn);
         }
 
+        // ── 유물 보정값 ─────────────────────────────
+
+        static BattleSession Session(List<BulletData> deck, BattleModifiers mods, params EnemyData[] enemies) =>
+            new BattleSession(new Combatant(100), enemies, deck, new System.Random(1), mods);
+
+        [Test]
+        public void Modifiers_DamageBonus_OnlyForDamagingBullets_AndFocusSlot()
+        {
+            var shot = Bullet("shot", damage: 5);
+            var guard = Bullet("guard", block: 5);
+            var s = Session(new List<BulletData> { shot, shot, shot, shot, shot, guard },
+                new BattleModifiers { DamageBonus = 1, FocusSlot = 6, FocusDamage = 10, BlockBonus = 2 }, Enemy(999));
+            s.StartTurn();
+            LoadInOrder(s, guard, shot, shot, shot, shot, shot);    // 6번 슬롯이 피해 탄
+            s.Confirm();
+            Assert.AreEqual(999 - (6 * 5 + 10), s.Enemies[0].Stats.Hp);
+            Assert.AreEqual(7, s.Player.Block);
+        }
+
+        [Test]
+        public void Modifiers_ExtraDraw_TurnStartBlock_BurnBonus()
+        {
+            var fire = Bullet("fire", burn: 1);
+            var s = Session(Many(fire, 40), new BattleModifiers { ExtraDraw = 2, TurnStartBlock = 4, BurnBonus = 1 }, Enemy(999));
+            s.StartTurn();
+            Assert.AreEqual(12, s.Hand.Count);
+            Assert.AreEqual(4, s.Player.Block);
+            FillCylinder(s);
+            var result = s.Confirm();
+            Assert.AreEqual(2, result.Shots[0].BurnApplied);
+        }
+
         // ── 타겟 / 승패 ─────────────────────────────
 
         [Test]
