@@ -36,12 +36,23 @@ namespace CowboyHunter.UI
         [SerializeField] TMP_Text resultText;
         [SerializeField] UnityEngine.UI.Button restartButton;
 
+        [Header("연출")]
+        [SerializeField] RectTransform shakeRoot;
+        [SerializeField] RectTransform fxLayer;
+        [SerializeField] TMP_Text popupTemplate;
+        [SerializeField] Transform playerBar;
+
         // 스킨 스프라이트에 곱해지는 색
         static readonly Color NormalColor = Color.white;
         static readonly Color HighlightColor = new(1f, 0.85f, 0.45f);
         static readonly Color TargetColor = new(1f, 0.62f, 0.55f);
         static readonly Color EmptyColor = new(0.6f, 0.57f, 0.55f);
         const int MaxLogLines = 14;
+        static readonly Color DamageColor = new(1f, 0.35f, 0.3f);          // 플레이어가 받은 피해
+        static readonly Color EnemyDamageColor = new(1f, 0.93f, 0.55f);     // 적이 받은 피해 (붉은 카드 위에서도 잘 보이게)
+        static readonly Color BlockColor = new(0.55f, 0.75f, 1f);
+        static readonly Color StatusColor = new(0.8f, 0.95f, 0.45f);
+        static readonly Color HitFlash = new(1f, 0.45f, 0.45f);
 
         BattleSession _session;
         int _selectedHand = -1;
@@ -49,12 +60,15 @@ namespace CowboyHunter.UI
         readonly List<UnityEngine.UI.Button> _enemyViews = new();
         readonly List<UnityEngine.UI.Button> _handViews = new();
         readonly List<string> _log = new();
+        Vector2 _shakeOrigin;
 
         public BattleSession Session => _session;
 
         void Awake()
         {
             enemyTemplate.gameObject.SetActive(false);
+            popupTemplate.gameObject.SetActive(false);
+            _shakeOrigin = shakeRoot.anchoredPosition;
             bulletTemplate.gameObject.SetActive(false);
             drawButton.onClick.AddListener(OnDraw);
             confirmButton.onClick.AddListener(OnConfirm);
@@ -103,7 +117,11 @@ namespace CowboyHunter.UI
             if (_animating || _session.Phase != BattlePhase.AwaitingDraw) return;
             int hpBefore = _session.Player.Hp;
             _session.StartTurn();
-            if (_session.Player.Hp < hpBefore) Log($"상태이상 피해 {hpBefore - _session.Player.Hp}");
+            if (_session.Player.Hp < hpBefore)
+            {
+                Log($"상태이상 피해 {hpBefore - _session.Player.Hp}");
+                Pop(playerPortrait.rectTransform, $"-{hpBefore - _session.Player.Hp}", StatusColor);
+            }
             Log($"── {_session.Turn}턴: {_session.Hand.Count}발 드로우");
             _selectedHand = -1;
             Refresh();
@@ -145,33 +163,83 @@ namespace CowboyHunter.UI
             if (_animating || !_session.CanConfirm) return;
             var loaded = new BulletData[Cylinder.SlotCount];
             for (int i = 0; i < loaded.Length; i++) loaded[i] = _session.Cylinder[i];
+            int playerHpBefore = _session.Player.Hp;   // Confirm은 적 턴까지 한 번에 계산하므로 발사 연출에는 이전 체력을 쓴다
             var result = _session.Confirm();
-            StartCoroutine(PlayTurn(loaded, result));
+            StartCoroutine(PlayTurn(loaded, result, playerHpBefore));
         }
 
         // 규칙 계산은 Confirm에서 끝났고, 여기서는 결과를 한 단계씩 보여준다.
-        IEnumerator PlayTurn(BulletData[] loaded, TurnResult result)
+        IEnumerator PlayTurn(BulletData[] loaded, TurnResult result, int playerHpBefore)
         {
             _animating = true;
             UpdateButtons();
 
+            var player = _session.Player;
             foreach (var shot in result.Shots)
             {
                 ShowCylinder(loaded, shot.Slot);
                 Log($"{shot.Slot + 1}번 {shot.Bullet.displayName} → {_session.Enemies[shot.TargetIndex].Data.displayName}{DescribeShot(shot)}");
+
+                var view = _enemyViews[shot.TargetIndex];
+                var target = (RectTransform)view.transform;
+                StartCoroutine(BattleFx.Kick(playerPortrait.rectTransform, new Vector2(-10f, 0f)));   // 반동
+                SetBar(view.transform.Find("HpBar"), shot.TargetHp, _session.Enemies[shot.TargetIndex].Stats.MaxHp, shot.TargetBlock);
+                SetBar(playerBar, playerHpBefore, player.MaxHp, shot.PlayerBlock);
+
+                if (shot.DamageDealt > 0)
+                {
+                    Pop(target, $"-{shot.DamageDealt}", EnemyDamageColor);
+                    StartCoroutine(BattleFx.Flash(UiSprites.Child(view, "Portrait"), HitFlash));
+                    StartCoroutine(BattleFx.Shake(target, target.anchoredPosition, shot.DamageDealt >= 10 ? 14f : 7f));
+                    if (shot.DamageDealt >= 10) StartCoroutine(BattleFx.Shake(shakeRoot, _shakeOrigin, 8f));
+                }
+                else if (shot.Bullet.damage > 0) Pop(target, "막힘", BlockColor);
+                if (shot.BlockGained > 0) Pop(playerPortrait.rectTransform, $"+{shot.BlockGained} 방어", BlockColor);
+                if (shot.BurnApplied > 0) Pop(target, $"화상 +{shot.BurnApplied}", StatusColor);
+                if (shot.PoisonApplied > 0) Pop(target, $"독 +{shot.PoisonApplied}", StatusColor);
+                if (shot.WeakApplied > 0) Pop(target, $"약화 +{shot.WeakApplied}", StatusColor);
+                if (shot.Killed)
+                {
+                    Pop(target, shot.Bullet.killBonusGold > 0 ? $"처치! +{shot.Bullet.killBonusGold}G" : "처치!", HighlightColor);
+                    view.image.color = EmptyColor;
+                }
                 yield return new WaitForSeconds(stepDelay);
             }
             ShowCylinder(new BulletData[Cylinder.SlotCount], -1);
 
             foreach (var a in result.EnemyActions)
             {
-                string name = _session.Enemies[a.EnemyIndex].Data.displayName;
-                if (a.StatusDamage > 0) Log($"{name} 상태이상 피해 {a.StatusDamage}");
+                var enemy = _session.Enemies[a.EnemyIndex];
+                var view = _enemyViews[a.EnemyIndex];
+                var rt = (RectTransform)view.transform;
+                string name = enemy.Data.displayName;
+                if (a.StatusDamage > 0)
+                {
+                    Log($"{name} 상태이상 피해 {a.StatusDamage}");
+                    Pop(rt, $"-{a.StatusDamage}", StatusColor);
+                }
                 if (a.Acted)
                 {
                     string extra = a.Action.type == EnemyActionType.Attack ? $" → 체력 -{a.DamageDealt}" : "";
                     Log($"{name}: {Describe(a.Action)}{extra}");
+                    switch (a.Action.type)
+                    {
+                        case EnemyActionType.Attack:
+                            StartCoroutine(BattleFx.Kick(rt, new Vector2(-24f, 0f)));
+                            if (a.DamageDealt > 0)
+                            {
+                                Pop(playerPortrait.rectTransform, $"-{a.DamageDealt}", DamageColor);
+                                StartCoroutine(BattleFx.Flash(playerPortrait, HitFlash));
+                                StartCoroutine(BattleFx.Shake(shakeRoot, _shakeOrigin, Mathf.Clamp(a.DamageDealt, 6, 20)));
+                            }
+                            else Pop(playerPortrait.rectTransform, "막음", BlockColor);
+                            break;
+                        case EnemyActionType.Block: Pop(rt, $"+{a.Action.value} 방어", BlockColor); break;
+                        case EnemyActionType.Poison: Pop(playerPortrait.rectTransform, $"독 +{a.Action.value}", StatusColor); break;
+                    }
                 }
+                SetBar(view.transform.Find("HpBar"), a.EnemyHp, enemy.Stats.MaxHp, a.EnemyBlock);
+                SetBar(playerBar, a.PlayerHp, player.MaxHp, a.PlayerBlock);
                 yield return new WaitForSeconds(stepDelay);
             }
 
@@ -185,17 +253,19 @@ namespace CowboyHunter.UI
         void Refresh()
         {
             var p = _session.Player;
-            playerText.text = $"카우보이\nHP {p.Hp}/{p.MaxHp}\n보호막 {p.Block}{Statuses(p)}";
+            playerText.text = $"카우보이{Statuses(p)}";
+            SetBar(playerBar, p.Hp, p.MaxHp, p.Block);
 
             for (int i = 0; i < _enemyViews.Count; i++)
             {
                 var enemy = _session.Enemies[i];
                 var view = _enemyViews[i];
                 var s = enemy.Stats;
-                var text = new StringBuilder($"{enemy.Data.displayName}{(enemy.Data.undead ? "\n<size=70%>[언데드]</size>" : "")}\nHP {s.Hp}/{s.MaxHp}\n보호막 {s.Block}{Statuses(s)}");
-                if (!enemy.IsDead && enemy.HasIntent) text.Append($"\n\n다음 행동: {Describe(enemy.Intent)}");
-                if (enemy.IsDead) text.Append("\n\n쓰러짐");
-                view.GetComponentInChildren<TMP_Text>().text = text.ToString();
+                var text = new StringBuilder($"{enemy.Data.displayName}{(enemy.Data.undead ? " <size=70%>[언데드]</size>" : "")}{Statuses(s)}");
+                if (!enemy.IsDead && enemy.HasIntent) text.Append($"\n다음 행동: {Describe(enemy.Intent)}");
+                if (enemy.IsDead) text.Append("\n쓰러짐");
+                view.transform.Find("Text").GetComponent<TMP_Text>().text = text.ToString();
+                SetBar(view.transform.Find("HpBar"), s.Hp, s.MaxHp, s.Block);
                 view.image.color = enemy.IsDead ? EmptyColor : i == _session.TargetIndex ? TargetColor : NormalColor;
                 var portrait = UiSprites.Child(view, "Portrait");
                 UiSprites.Show(portrait, enemy.Data.sprite);
@@ -224,6 +294,17 @@ namespace CowboyHunter.UI
             deckText.text = $"드로우 {_session.Deck.DrawPile.Count}  |  버림 {_session.Deck.DiscardPile.Count}";
             UpdateButtons();
         }
+
+        // 체력바: Fill의 가로 길이로 남은 체력을, 라벨로 숫자와 보호막을 보여준다.
+        static void SetBar(Transform bar, int hp, int maxHp, int block)
+        {
+            var fill = (RectTransform)bar.Find("Fill");
+            fill.anchorMax = new Vector2(maxHp > 0 ? Mathf.Clamp01((float)hp / maxHp) : 0f, 1f);
+            bar.Find("Label").GetComponent<TMP_Text>().text = block > 0 ? $"{hp}/{maxHp}  방어 {block}" : $"{hp}/{maxHp}";
+        }
+
+        void Pop(RectTransform target, string text, Color color) =>
+            StartCoroutine(BattleFx.Popup(popupTemplate, fxLayer, target, text, color));
 
         void ShowCylinder(BulletData[] bullets, int firingSlot)
         {
