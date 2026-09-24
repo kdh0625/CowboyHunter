@@ -16,6 +16,11 @@ namespace CowboyHunter.Battle
         public int PoisonApplied;
         public int WeakApplied;
         public bool Killed;
+
+        // 발사 직후 상태 (연출용)
+        public int TargetHp;
+        public int TargetBlock;
+        public int PlayerBlock;
     }
 
     public struct EnemyActionResult
@@ -25,6 +30,12 @@ namespace CowboyHunter.Battle
         public bool Acted;
         public EnemyAction Action;
         public int DamageDealt;
+
+        // 행동 직후 상태 (연출용)
+        public int EnemyHp;
+        public int EnemyBlock;
+        public int PlayerHp;
+        public int PlayerBlock;
     }
 
     public class TurnResult
@@ -165,6 +176,9 @@ namespace CowboyHunter.Battle
             if (bullet.burn > 0) { shot.BurnApplied = bullet.burn + _mods.BurnBonus; target.AddBurn(shot.BurnApplied); }
             if (bullet.poison > 0) { shot.PoisonApplied = bullet.poison; target.AddPoison(shot.PoisonApplied); }
             if (bullet.block > 0) { shot.BlockGained = bullet.block + _mods.BlockBonus; Player.GainBlock(shot.BlockGained); }
+            shot.TargetHp = target.Hp;
+            shot.TargetBlock = target.Block;
+            shot.PlayerBlock = Player.Block;
             return shot;
         }
 
@@ -195,6 +209,10 @@ namespace CowboyHunter.Battle
                     }
                     enemy.AdvanceIntent();
                 }
+                r.EnemyHp = enemy.Stats.Hp;
+                r.EnemyBlock = enemy.Stats.Block;
+                r.PlayerHp = Player.Hp;
+                r.PlayerBlock = Player.Block;
                 result.EnemyActions.Add(r);
                 if (Player.IsDead) break;
             }

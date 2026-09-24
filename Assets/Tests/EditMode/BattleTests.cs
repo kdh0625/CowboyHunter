@@ -289,6 +289,27 @@ namespace CowboyHunter.Tests
             Assert.AreEqual(94, s.Player.Hp);
         }
 
+        // ── 연출용 기록 ─────────────────────────────
+
+        [Test]
+        public void TurnResult_RecordsStateAfterEachStep()
+        {
+            var shot = Bullet("shot", damage: 5);
+            var guard = Bullet("guard", block: 3);
+            var e = Enemy(100, new EnemyAction { type = EnemyActionType.Attack, value = 10 });
+            var s = Session(new List<BulletData> { shot, guard, shot, shot, guard, shot }, e);
+            s.StartTurn();
+            LoadInOrder(s, shot, guard, shot, shot, guard, shot);
+            var r = s.Confirm();
+
+            CollectionAssert.AreEqual(new[] { 95, 95, 90, 85, 85, 80 }, r.Shots.Select(x => x.TargetHp));
+            CollectionAssert.AreEqual(new[] { 0, 3, 3, 3, 6, 6 }, r.Shots.Select(x => x.PlayerBlock));
+            Assert.AreEqual(96, r.EnemyActions[0].PlayerHp);          // 공격 10 - 보호막 6
+            Assert.AreEqual(0, r.EnemyActions[0].PlayerBlock);
+            Assert.AreEqual(s.Player.Hp, r.EnemyActions[0].PlayerHp);
+            Assert.AreEqual(s.Enemies[0].Stats.Hp, r.EnemyActions[0].EnemyHp);
+        }
+
         // ── 타겟 / 승패 ─────────────────────────────
 
         [Test]
