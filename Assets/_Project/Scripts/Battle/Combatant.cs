@@ -9,6 +9,7 @@ namespace CowboyHunter.Battle
         public int Block { get; private set; }
         public int Burn { get; private set; }
         public int Poison { get; private set; }
+        public int Weak { get; private set; }
         public bool IsDead => Hp <= 0;
 
         public Combatant(int maxHp) : this(maxHp, maxHp) { }
@@ -38,6 +39,8 @@ namespace CowboyHunter.Battle
         public void ClearBlock() => Block = 0;
         public void AddBurn(int stacks) => Burn += stacks;
         public void AddPoison(int stacks) => Poison += stacks;
+        public void AddWeak(int amount) => Weak += amount;
+        public void ClearWeak() => Weak = 0;
 
         // 턴 시작 시 상태이상 피해(보호막 무시). 화상은 1씩 줄고, 독은 전투 끝까지 유지된다.
         public int TickStatus()

@@ -10,17 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a486bd104752d71408afaa0e4c3eece4, type: 3}
-  m_Name: Enemy_VenomousScorpion
+  m_Name: Boss_SheriffHale
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Battle.EnemyData
-  displayName: Venomous Scorpion
+  displayName: Sheriff Hale
   sprite: {fileID: 0}
-  maxHp: 48
-  bounty: 20
+  maxHp: 220
+  bounty: 110
   undead: 0
   pattern:
-  - type: 2
-    value: 2
+  - type: 1
+    value: 20
     hits: 0
   - type: 0
-    value: 7
+    value: 14
+    hits: 2
+  - type: 2
+    value: 4
+    hits: 0
+  - type: 0
+    value: 30
     hits: 0

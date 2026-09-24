@@ -32,11 +32,20 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8114f1fa8ca3415458daf83094e72fe5, type: 2}
   - {fileID: 11400000, guid: c553d0103fd428546bfc8a99e9451f08, type: 2}
   - {fileID: 11400000, guid: f52937633bd0b0c4c9f83cceafa62478, type: 2}
+  - {fileID: 11400000, guid: 57903d6f21204304782cbfd1037b25b8, type: 2}
+  - {fileID: 11400000, guid: 51e274974bde508438d25322b0b681c5, type: 2}
   shopBullets:
+  - {fileID: 11400000, guid: aa9f05fd8a8ab544dbdbb1533b949383, type: 2}
   - {fileID: 11400000, guid: 09c7c06eb2a2b3e41b55ba2c7e893541, type: 2}
   - {fileID: 11400000, guid: 9ac4925b939e60945a946457b32a47a7, type: 2}
   - {fileID: 11400000, guid: d3fd7efad1f63f74fa7aff4815cc36b3, type: 2}
-  - {fileID: 11400000, guid: aa9f05fd8a8ab544dbdbb1533b949383, type: 2}
+  - {fileID: 11400000, guid: d9d574a351879f54f859335a71af2cbb, type: 2}
+  - {fileID: 11400000, guid: 5c6d6f37380acad4e95039bde329ebe4, type: 2}
+  - {fileID: 11400000, guid: 4a859cf44ed5b224ebdf72049b7ee4b0, type: 2}
+  - {fileID: 11400000, guid: c4ca8bc7d6b57db4daabf7d49bd623f5, type: 2}
+  - {fileID: 11400000, guid: a6c5b7286b95468479179d343091f0e9, type: 2}
+  - {fileID: 11400000, guid: ee8048a5a0831054a95854fc0a76b40a, type: 2}
+  - {fileID: 11400000, guid: 7d59b12f3bc2b57408825bb7741fd591, type: 2}
   bulletOffers: 3
   whiskeyPrice: 20
   whiskeyHeal: 25

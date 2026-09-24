@@ -14,12 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Battle.EnemyData
   displayName: Coyote Chief
   sprite: {fileID: 0}
-  maxHp: 120
-  bounty: 60
+  maxHp: 90
+  bounty: 45
+  undead: 0
   pattern:
   - type: 0
-    value: 12
+    value: 6
+    hits: 2
   - type: 1
     value: 10
+    hits: 0
   - type: 0
-    value: 18
+    value: 16
+    hits: 0

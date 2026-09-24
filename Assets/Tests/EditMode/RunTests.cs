@@ -99,6 +99,16 @@ namespace CowboyHunter.Tests
         }
 
         [Test]
+        public void BonusGold_AddedToBountyReward()
+        {
+            var run = new RunState(Config(), new System.Random(1));
+            run.Accept(0);
+            run.CompleteBattle(true, 100, bonusGold: 15);
+            Assert.AreEqual(25, run.Gold);
+            Assert.AreEqual(25, run.LastGoldReward);
+        }
+
+        [Test]
         public void Loss_EndsRun()
         {
             var run = new RunState(Config(), new System.Random(1));

@@ -16,6 +16,11 @@ MonoBehaviour:
   normals:
   - {fileID: 11400000, guid: c69c0bf69c98c4846b1a4dce9e482513, type: 2}
   - {fileID: 11400000, guid: 8ba4ddde95a13574281f31238f7d0947, type: 2}
+  - {fileID: 11400000, guid: dcb00816c4190f5469abca054fe00f47, type: 2}
+  - {fileID: 11400000, guid: ed17a9395a529b74e98f6d74c8cb19f9, type: 2}
+  - {fileID: 11400000, guid: 2a39387ea0750e44da8ff97a3774d65b, type: 2}
+  - {fileID: 11400000, guid: 1e45d0c1c37cf9d499ad879d8f300b44, type: 2}
   elites:
   - {fileID: 11400000, guid: 9b5d181ed09243f49b13e65893db4c79, type: 2}
-  boss: {fileID: 11400000, guid: 63b712cd7cd1edd4ab7355184ed5a5e4, type: 2}
+  - {fileID: 11400000, guid: 63b712cd7cd1edd4ab7355184ed5a5e4, type: 2}
+  boss: {fileID: 11400000, guid: 41fd6504ce8ac8344acf8058c8efd17d, type: 2}

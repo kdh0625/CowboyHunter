@@ -77,7 +77,8 @@ namespace CowboyHunter.Core
         }
 
         // 전투 결과 반영. 체력은 회복 없이 그대로 이어지고, 이기면 상점으로 간다.
-        public void CompleteBattle(bool won, int playerHpAfter)
+        // bonusGold: 현상금탄·유물 등으로 전투 중 추가로 번 골드
+        public void CompleteBattle(bool won, int playerHpAfter, int bonusGold = 0)
         {
             Require(RunPhase.Battle);
             var target = CurrentTarget.Value;
@@ -92,8 +93,8 @@ namespace CowboyHunter.Core
                 return;
             }
 
-            Gold += target.Bounty;
-            LastGoldReward = target.Bounty;
+            Gold += target.Bounty + bonusGold;
+            LastGoldReward = target.Bounty + bonusGold;
             if (target.IsElite)
             {
                 LastRelicReward = RandomUnownedRelic();

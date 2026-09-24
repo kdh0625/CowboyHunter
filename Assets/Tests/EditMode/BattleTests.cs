@@ -200,6 +200,95 @@ namespace CowboyHunter.Tests
             Assert.AreEqual(2, result.Shots[0].BurnApplied);
         }
 
+        // ── 특수 탄환 / 적 ──────────────────────────
+
+        [Test]
+        public void SilverBullet_BonusOnlyAgainstUndead()
+        {
+            var silver = Bullet("silver", damage: 5); silver.bonusVsUndead = 7;
+            var undead = Enemy(999); undead.undead = true;
+            var living = Session(Many(silver, 40), Enemy(999));
+            var dead = Session(Many(silver, 40), undead);
+            foreach (var s in new[] { living, dead }) { s.StartTurn(); FillCylinder(s); s.Confirm(); }
+            Assert.AreEqual(999 - 30, living.Enemies[0].Stats.Hp);
+            Assert.AreEqual(999 - 72, dead.Enemies[0].Stats.Hp);
+        }
+
+        [Test]
+        public void FirebirdBullet_BonusWhenTargetAlreadyBurning_SoOrderMatters()
+        {
+            var fire = Bullet("fire", burn: 1);
+            var firebird = Bullet("firebird", damage: 4); firebird.bonusVsBurning = 6;
+            var filler = Bullet("filler");
+            var deck = new List<BulletData> { fire, firebird, filler, filler, filler, filler };
+
+            int DamageWith(params BulletData[] order)
+            {
+                var s = Session(new List<BulletData>(deck), Enemy(999));
+                s.StartTurn();
+                LoadInOrder(s, order);
+                var r = s.Confirm();
+                return r.Shots.Sum(x => x.DamageDealt);
+            }
+
+            Assert.AreEqual(10, DamageWith(fire, firebird, filler, filler, filler, filler));
+            Assert.AreEqual(4, DamageWith(firebird, fire, filler, filler, filler, filler));
+        }
+
+        [Test]
+        public void BountyBullet_GivesGoldOnlyWhenItKills()
+        {
+            var normal = Bullet("normal", damage: 5);
+            var bounty = Bullet("bounty", damage: 5); bounty.killBonusGold = 15;
+            var deck = new List<BulletData> { normal, normal, bounty, bounty, normal, normal };
+
+            var s = Session(new List<BulletData>(deck), Enemy(15));   // 3번째 발(현상금탄)에 처치
+            s.StartTurn();
+            LoadInOrder(s, normal, normal, bounty, bounty, normal, normal);
+            var r = s.Confirm();
+            Assert.IsTrue(r.Shots[2].Killed);
+            Assert.AreEqual(15, s.BonusGold);
+
+            s = Session(new List<BulletData>(deck), Enemy(10));   // 2번째 발(일반탄)에 처치
+            s.StartTurn();
+            LoadInOrder(s, normal, normal, bounty, bounty, normal, normal);
+            s.Confirm();
+            Assert.AreEqual(0, s.BonusGold);
+        }
+
+        [Test]
+        public void KillGoldRelic_AddsGoldPerKill()
+        {
+            var s = Session(Many(Bullet("n", 10), 40), new BattleModifiers { KillGold = 10 }, Enemy(10), Enemy(10));
+            s.StartTurn(); FillCylinder(s); s.Confirm();
+            Assert.AreEqual(20, s.BonusGold);
+        }
+
+        [Test]
+        public void Weaken_ReducesEachHitOfNextAttack_ThenClears()
+        {
+            var hex = Bullet("hex"); hex.weaken = 2;
+            var e = Enemy(999, new EnemyAction { type = EnemyActionType.Attack, value = 5, hits = 3 });
+            var s = Session(Many(hex, 40), e);
+            s.StartTurn(); FillCylinder(s);
+            var r = s.Confirm();                                   // 약화 12 → 5-12 = 0 x3
+            Assert.AreEqual(0, r.EnemyActions[0].DamageDealt);
+            Assert.AreEqual(0, s.Enemies[0].Stats.Weak);
+            Assert.AreEqual(100, s.Player.Hp);
+        }
+
+        [Test]
+        public void MultiHitAttack_EachHitGoesThroughBlockSeparately()
+        {
+            var guard = Bullet("guard", block: 1);
+            var e = Enemy(999, new EnemyAction { type = EnemyActionType.Attack, value = 4, hits = 3 });
+            var s = Session(Many(guard, 40), e);
+            s.StartTurn(); FillCylinder(s);
+            var r = s.Confirm();                                   // 보호막 6, 4x3=12 → 6 피해
+            Assert.AreEqual(6, r.EnemyActions[0].DamageDealt);
+            Assert.AreEqual(94, s.Player.Hp);
+        }
+
         // ── 타겟 / 승패 ─────────────────────────────
 
         [Test]

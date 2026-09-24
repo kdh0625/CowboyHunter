@@ -16,6 +16,10 @@ namespace CowboyHunter.Battle
         [Tooltip("플레이어 보호막 획득")] public int block;
         [Tooltip("대상에게 화상 부여")] public int burn;
         [Tooltip("대상에게 독 부여")] public int poison;
+        [Tooltip("대상의 다음 공격을 타격마다 N 약화")] public int weaken;
+        [Tooltip("대상이 언데드면 추가 피해")] public int bonusVsUndead;
+        [Tooltip("대상이 화상 상태면 추가 피해")] public int bonusVsBurning;
+        [Tooltip("이 탄으로 처치하면 추가 골드")] public int killBonusGold;
 
         [Header("연계: 직전 슬롯에서 이 탄이 발사됐으면 추가 피해")]
         public BulletData comboPrevious;

@@ -16,10 +16,14 @@ MonoBehaviour:
   sprite: {fileID: 0}
   maxHp: 75
   bounty: 40
+  undead: 1
   pattern:
   - type: 0
     value: 11
+    hits: 0
   - type: 1
     value: 12
+    hits: 0
   - type: 0
     value: 15
+    hits: 0
