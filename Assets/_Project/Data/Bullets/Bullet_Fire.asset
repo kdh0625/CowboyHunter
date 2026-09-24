@@ -14,12 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Battle.BulletData
   displayName: "\uD654\uC5FC\uD0C4"
   price: 30
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 58cdf17aecd39894287d86a3ab0816b4, type: 3}
   description: "\uD53C\uD574 3, \uD654\uC0C1 2"
   damage: 3
   pierce: 0
   block: 0
   burn: 2
   poison: 0
+  weaken: 0
+  bonusVsUndead: 0
+  bonusVsBurning: 0
+  killBonusGold: 0
   comboPrevious: {fileID: 0}
   comboBonusDamage: 0

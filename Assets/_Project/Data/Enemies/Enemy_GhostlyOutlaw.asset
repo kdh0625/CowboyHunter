@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Enemy_GhostlyOutlaw
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Battle.EnemyData
   displayName: Ghostly Outlaw
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: f500aa163e41d9b4581d3817d7670020, type: 3}
   maxHp: 75
   bounty: 40
   undead: 1

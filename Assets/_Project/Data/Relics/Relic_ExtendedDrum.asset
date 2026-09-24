@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Relic_ExtendedDrum
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Core.RelicData
   displayName: "\uD655\uC7A5 \uD0C4\uCC3D"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: baa360c3e4461044c88f2839e5d7973c, type: 3}
   description: "\uD134\uB2F9 \uB4DC\uB85C\uC6B0 +2"
   slot: 2
   price: 80
@@ -24,3 +24,5 @@ MonoBehaviour:
   turnStartBlock: 0
   focusSlot: 0
   focusDamage: 0
+  undeadBonus: 0
+  killGold: 0

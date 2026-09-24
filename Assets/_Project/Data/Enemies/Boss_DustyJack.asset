@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Boss_DustyJack
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Battle.EnemyData
   displayName: Dusty Jack
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 3f1f0e30a3d93c845af95d0e7e8e5614, type: 3}
   maxHp: 140
   bounty: 70
   undead: 0

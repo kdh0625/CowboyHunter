@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Enemy_GiantSpider
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Battle.EnemyData
   displayName: Giant Spider
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: f9147a39d6bd26f4ca79eee3c71147dc, type: 3}
   maxHp: 50
   bounty: 20
   undead: 0

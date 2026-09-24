@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Relic_HawkEye
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Core.RelicData
   displayName: "\uB9E4\uC758 \uB208"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 199a94b98bf3ca047a3c4227528baa48, type: 3}
   description: "6\uBC88 \uC2AC\uB86F \uD0C4\uC758 \uD53C\uD574 +6"
   slot: 1
   price: 60
@@ -24,3 +24,5 @@ MonoBehaviour:
   turnStartBlock: 0
   focusSlot: 6
   focusDamage: 6
+  undeadBonus: 0
+  killGold: 0

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Relic_PowderInjector
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Core.RelicData
   displayName: "\uD654\uC57D \uC8FC\uC785\uAD6C"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: dec311f8a89cb6147bc571c10388f3c1, type: 3}
   description: "\uD654\uC0C1\uC744 \uAC70\uB294 \uD0C4\uC758 \uD654\uC0C1 +1"
   slot: 0
   price: 55
@@ -24,3 +24,5 @@ MonoBehaviour:
   turnStartBlock: 0
   focusSlot: 0
   focusDamage: 0
+  undeadBonus: 0
+  killGold: 0

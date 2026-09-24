@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Enemy_CoyoteChief
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Battle.EnemyData
   displayName: Coyote Chief
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: b2de27703e7329d49802fa16cf3d0c1b, type: 3}
   maxHp: 90
   bounty: 45
   undead: 0

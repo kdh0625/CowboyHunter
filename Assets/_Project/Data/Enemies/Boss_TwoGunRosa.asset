@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Boss_TwoGunRosa
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Battle.EnemyData
   displayName: Two-Gun Rosa
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 0a33ba0d1a06819409b4b3b6b71f1d93, type: 3}
   maxHp: 180
   bounty: 90
   undead: 0

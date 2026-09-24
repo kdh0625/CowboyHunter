@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Enemy_SkeletalGunslinger
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Battle.EnemyData
   displayName: Skeletal Gunslinger
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: a60afe0f98867b0409a0bf2edefeb469, type: 3}
   maxHp: 55
   bounty: 20
   undead: 1

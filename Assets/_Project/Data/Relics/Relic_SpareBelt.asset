@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Relic_SpareBelt
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Core.RelicData
   displayName: "\uC608\uBE44 \uD0C4\uB760"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: f4583a102dca81749b374151150a1701, type: 3}
   description: "\uD134\uB2F9 \uB4DC\uB85C\uC6B0 +1"
   slot: 2
   price: 50
@@ -24,3 +24,5 @@ MonoBehaviour:
   turnStartBlock: 0
   focusSlot: 0
   focusDamage: 0
+  undeadBonus: 0
+  killGold: 0

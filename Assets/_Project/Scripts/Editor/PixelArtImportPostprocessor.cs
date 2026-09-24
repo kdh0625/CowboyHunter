@@ -16,6 +16,7 @@ namespace CowboyHunter.Editor
 
             var importer = (TextureImporter)assetImporter;
             importer.textureType = TextureImporterType.Sprite;
+            importer.spriteImportMode = SpriteImportMode.Single;   // Multiple이면 9-slice 테두리 설정이 무시된다
             importer.spritePixelsPerUnit = PixelsPerUnit;
             importer.filterMode = FilterMode.Point;
             importer.mipmapEnabled = false;

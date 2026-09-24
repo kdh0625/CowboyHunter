@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Enemy_PixelBandit
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Battle.EnemyData
   displayName: Pixel Bandit
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: f86a588c23a79e84b9c867012770c56b, type: 3}
   maxHp: 60
   bounty: 15
   undead: 0
