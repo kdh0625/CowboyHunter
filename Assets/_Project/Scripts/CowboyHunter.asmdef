@@ -1,6 +1,6 @@
 {
     "name": "CowboyHunter",
     "rootNamespace": "CowboyHunter",
-    "references": ["Unity.RenderPipelines.Universal.Runtime", "Unity.InputSystem"],
+    "references": ["Unity.RenderPipelines.Universal.Runtime", "Unity.InputSystem", "Unity.TextMeshPro", "UnityEngine.UI"],
     "autoReferenced": true
 }
