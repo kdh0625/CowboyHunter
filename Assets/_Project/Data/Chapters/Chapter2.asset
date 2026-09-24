@@ -16,5 +16,6 @@ MonoBehaviour:
   normals:
   - {fileID: 11400000, guid: c69c0bf69c98c4846b1a4dce9e482513, type: 2}
   - {fileID: 11400000, guid: 8ba4ddde95a13574281f31238f7d0947, type: 2}
-  elites: []
+  elites:
+  - {fileID: 11400000, guid: 9b5d181ed09243f49b13e65893db4c79, type: 2}
   boss: {fileID: 11400000, guid: 63b712cd7cd1edd4ab7355184ed5a5e4, type: 2}

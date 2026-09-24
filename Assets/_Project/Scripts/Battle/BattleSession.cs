@@ -11,6 +11,9 @@ namespace CowboyHunter.Battle
         public BulletData Bullet;
         public int TargetIndex;
         public int DamageDealt;
+        public int BlockGained;
+        public int BurnApplied;
+        public int PoisonApplied;
     }
 
     public struct EnemyActionResult
@@ -45,10 +48,13 @@ namespace CowboyHunter.Battle
 
         readonly List<EnemyUnit> _enemies = new();
         readonly List<BulletData> _hand = new();
+        readonly BattleModifiers _mods;
 
-        public BattleSession(Combatant player, IEnumerable<EnemyData> enemies, IEnumerable<BulletData> deck, System.Random rng)
+        public BattleSession(Combatant player, IEnumerable<EnemyData> enemies, IEnumerable<BulletData> deck, System.Random rng, BattleModifiers modifiers = default)
         {
             Player = player;
+            _mods = modifiers;
+            DrawCount = DefaultDrawCount + modifiers.ExtraDraw;
             foreach (var e in enemies) _enemies.Add(new EnemyUnit(e));
             Deck = new Deck(deck, rng);
         }
@@ -59,6 +65,7 @@ namespace CowboyHunter.Battle
             Require(BattlePhase.AwaitingDraw);
             Turn++;
             Player.ClearBlock();
+            if (_mods.TurnStartBlock > 0) Player.GainBlock(_mods.TurnStartBlock);
             Player.TickStatus();
             if (CheckEnd()) return;
 
@@ -132,14 +139,19 @@ namespace CowboyHunter.Battle
         {
             var target = _enemies[TargetIndex].Stats;
             int damage = bullet.damage;
+            if (damage > 0)
+            {
+                damage += _mods.DamageBonus;
+                if (slot == _mods.FocusSlot - 1) damage += _mods.FocusDamage;
+            }
             if (bullet.comboPrevious != null && previous == bullet.comboPrevious)
                 damage += bullet.comboBonusDamage;
 
             var shot = new ShotResult { Slot = slot, Bullet = bullet, TargetIndex = TargetIndex };
             shot.DamageDealt = target.TakeDamage(damage, bullet.pierce);
-            if (bullet.burn > 0) target.AddBurn(bullet.burn);
-            if (bullet.poison > 0) target.AddPoison(bullet.poison);
-            if (bullet.block > 0) Player.GainBlock(bullet.block);
+            if (bullet.burn > 0) { shot.BurnApplied = bullet.burn + _mods.BurnBonus; target.AddBurn(shot.BurnApplied); }
+            if (bullet.poison > 0) { shot.PoisonApplied = bullet.poison; target.AddPoison(shot.PoisonApplied); }
+            if (bullet.block > 0) { shot.BlockGained = bullet.block + _mods.BlockBonus; Player.GainBlock(shot.BlockGained); }
             return shot;
         }
 

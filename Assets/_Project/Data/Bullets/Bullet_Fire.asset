@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Bullet_Fire
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Battle.BulletData
   displayName: "\uD654\uC5FC\uD0C4"
+  price: 30
   icon: {fileID: 0}
   description: "\uD53C\uD574 3, \uD654\uC0C1 2"
   damage: 3

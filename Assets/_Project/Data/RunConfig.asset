@@ -23,3 +23,21 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2d09ac1f3a0298849b6ad643416835f7, type: 2}
   - {fileID: 11400000, guid: b1dd6bb6c119d1743b3bdf857a6ccb44, type: 2}
   - {fileID: 11400000, guid: 788f8f7b066367242b376b3da21d5070, type: 2}
+  relicPool:
+  - {fileID: 11400000, guid: 0e8a985c5ed66ab4a961c4f9112ea76f, type: 2}
+  - {fileID: 11400000, guid: cda361076f8cf2841b182472fe61cbed, type: 2}
+  - {fileID: 11400000, guid: a85937547ad18354dbbb9a2af10e1ea5, type: 2}
+  - {fileID: 11400000, guid: 9f20ce764548a7244b473b71b50b0f91, type: 2}
+  - {fileID: 11400000, guid: 4426ce9ba86b7c140b09405bacdb06df, type: 2}
+  - {fileID: 11400000, guid: 8114f1fa8ca3415458daf83094e72fe5, type: 2}
+  - {fileID: 11400000, guid: c553d0103fd428546bfc8a99e9451f08, type: 2}
+  - {fileID: 11400000, guid: f52937633bd0b0c4c9f83cceafa62478, type: 2}
+  shopBullets:
+  - {fileID: 11400000, guid: 09c7c06eb2a2b3e41b55ba2c7e893541, type: 2}
+  - {fileID: 11400000, guid: 9ac4925b939e60945a946457b32a47a7, type: 2}
+  - {fileID: 11400000, guid: d3fd7efad1f63f74fa7aff4815cc36b3, type: 2}
+  - {fileID: 11400000, guid: aa9f05fd8a8ab544dbdbb1533b949383, type: 2}
+  bulletOffers: 3
+  whiskeyPrice: 20
+  whiskeyHeal: 25
+  removalPrice: 30

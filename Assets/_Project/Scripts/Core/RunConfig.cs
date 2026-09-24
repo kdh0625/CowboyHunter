@@ -14,5 +14,15 @@ namespace CowboyHunter.Core
         public int maxPosters = 5;
         [Range(0f, 1f)] public float eliteChance = 0.2f;
         public List<ChapterData> chapters = new();
+
+        [Header("유물")]
+        [Tooltip("엘리트 드랍과 상점에 나오는 유물")] public List<RelicData> relicPool = new();
+
+        [Header("상점")]
+        public List<BulletData> shopBullets = new();
+        public int bulletOffers = 3;
+        public int whiskeyPrice = 20;
+        public int whiskeyHeal = 25;
+        public int removalPrice = 30;
     }
 }

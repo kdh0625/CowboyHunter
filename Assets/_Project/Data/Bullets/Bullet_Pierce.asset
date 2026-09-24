@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Bullet_Pierce
   m_EditorClassIdentifier: CowboyHunter::CowboyHunter.Battle.BulletData
   displayName: "\uAD00\uD1B5\uD0C4"
+  price: 35
   icon: {fileID: 0}
   description: "\uBC29\uC5B4 \uBB34\uC2DC \uD53C\uD574 5. \uC9C1\uC804 \uD0C4\uC774 \uD654\uC5FC\uD0C4\uC774\uBA74 +4"
   damage: 5
