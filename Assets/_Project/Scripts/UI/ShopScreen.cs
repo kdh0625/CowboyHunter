@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using CowboyHunter.Audio;
 using CowboyHunter.Battle;
 using CowboyHunter.Core;
 using TMPro;
@@ -34,6 +35,7 @@ namespace CowboyHunter.UI
         void Start()
         {
             _run = GameSession.Run;
+            Sound.PlayMusic(MusicId.Shop);
             offerTemplate.gameObject.SetActive(false);
             inventoryTemplate.gameObject.SetActive(false);
             removalTemplate.gameObject.SetActive(false);
@@ -43,10 +45,11 @@ namespace CowboyHunter.UI
             for (int i = 0; i < slotButtons.Length; i++)
             {
                 var slot = (RelicSlot)i;
-                slotButtons[i].onClick.AddListener(() => { _run.Unequip(slot); Refresh(); });
+                slotButtons[i].onClick.AddListener(() => { _run.Unequip(slot); Sound.Play(SoundId.Equip); Refresh(); });
             }
             leaveButton.onClick.AddListener(() =>
             {
+                Sound.Play(SoundId.UiClick);
                 _run.LeaveShop();
                 SceneManager.LoadScene(SceneNames.WantedBoard);
             });
@@ -78,7 +81,7 @@ namespace CowboyHunter.UI
                     () => Try(_run.BuyRelic(), $"{relic.displayName}을(를) 얻었습니다."), relic.icon);
             }
             AddOffer($"위스키\n<size=70%>체력 {config.whiskeyHeal} 회복</size>\n{config.whiskeyPrice} GOLD", shop.WhiskeySold,
-                () => Try(_run.BuyWhiskey(), "체력을 회복했습니다."));
+                () => { if (Try(_run.BuyWhiskey(), "체력을 회복했습니다.")) Sound.Play(SoundId.Heal); });
             AddOffer($"탄환 제거\n<size=70%>탄창에서 1발 제거</size>\n{config.removalPrice} GOLD", shop.RemovalUsed,
                 () => { removalPanel.SetActive(!removalPanel.activeSelf); Refresh(); });
 
@@ -97,7 +100,7 @@ namespace CowboyHunter.UI
             {
                 var item = Spawn(inventoryTemplate, inventoryList, $"{relic.displayName} <size=70%>({RelicData.SlotName(relic.slot)})</size>");
                 UiSprites.Show(UiSprites.Child(item, "Icon"), relic.icon);
-                item.onClick.AddListener(() => { _run.Equip(relic); Refresh(); });
+                item.onClick.AddListener(() => { _run.Equip(relic); Sound.Play(SoundId.Equip); Refresh(); });
             }
 
             if (removalPanel.activeSelf)
@@ -136,6 +139,7 @@ namespace CowboyHunter.UI
         bool Try(bool success, string successMessage)
         {
             messageText.text = success ? successMessage : "골드가 부족하거나 살 수 없습니다.";
+            Sound.Play(success ? SoundId.Buy : SoundId.BuyFail);
             return success;
         }
     }

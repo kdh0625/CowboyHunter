@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using CowboyHunter.Audio;
 using CowboyHunter.Battle;
 using CowboyHunter.Core;
 using TMPro;
@@ -94,6 +95,7 @@ namespace CowboyHunter.UI
             _log.Clear();
             resultOverlay.SetActive(false);
             UiSprites.Show(playerPortrait, playerSprite);
+            Sound.PlayMusic(run != null && run.CurrentTarget.Value.IsBoss ? MusicId.Boss : MusicId.Battle);
 
             foreach (var view in _enemyViews) Destroy(view.gameObject);
             _enemyViews.Clear();
@@ -117,6 +119,7 @@ namespace CowboyHunter.UI
             if (_animating || _session.Phase != BattlePhase.AwaitingDraw) return;
             int hpBefore = _session.Player.Hp;
             _session.StartTurn();
+            Sound.Play(SoundId.Draw);
             if (_session.Player.Hp < hpBefore)
             {
                 Log($"상태이상 피해 {hpBefore - _session.Player.Hp}");
@@ -142,11 +145,13 @@ namespace CowboyHunter.UI
             if (_selectedHand >= 0)
             {
                 _session.Load(_selectedHand, slot);
+                Sound.Play(SoundId.LoadBullet);
                 _selectedHand = -1;
             }
             else if (_session.Cylinder[slot] != null)
             {
                 _session.Unload(slot);
+                Sound.Play(SoundId.UnloadBullet);
             }
             Refresh();
         }
@@ -155,6 +160,7 @@ namespace CowboyHunter.UI
         {
             if (_animating || _session.Phase != BattlePhase.Loading || _session.Enemies[index].IsDead) return;
             _session.SelectTarget(index);
+            Sound.Play(SoundId.UiClick);
             Refresh();
         }
 
@@ -183,23 +189,27 @@ namespace CowboyHunter.UI
                 var view = _enemyViews[shot.TargetIndex];
                 var target = (RectTransform)view.transform;
                 StartCoroutine(BattleFx.Kick(playerPortrait.rectTransform, new Vector2(-10f, 0f)));   // 반동
+                Sound.Play(SoundId.Shot);
                 SetBar(view.transform.Find("HpBar"), shot.TargetHp, _session.Enemies[shot.TargetIndex].Stats.MaxHp, shot.TargetBlock);
                 SetBar(playerBar, playerHpBefore, player.MaxHp, shot.PlayerBlock);
 
                 if (shot.DamageDealt > 0)
                 {
                     Pop(target, $"-{shot.DamageDealt}", EnemyDamageColor);
+                    Sound.Play(SoundId.Hit);
                     StartCoroutine(BattleFx.Flash(UiSprites.Child(view, "Portrait"), HitFlash));
                     StartCoroutine(BattleFx.Shake(target, target.anchoredPosition, shot.DamageDealt >= 10 ? 14f : 7f));
                     if (shot.DamageDealt >= 10) StartCoroutine(BattleFx.Shake(shakeRoot, _shakeOrigin, 8f));
                 }
-                else if (shot.Bullet.damage > 0) Pop(target, "막힘", BlockColor);
-                if (shot.BlockGained > 0) Pop(playerPortrait.rectTransform, $"+{shot.BlockGained} 방어", BlockColor);
+                else if (shot.Bullet.damage > 0) { Pop(target, "막힘", BlockColor); Sound.Play(SoundId.Blocked); }
+                if (shot.BlockGained > 0) { Pop(playerPortrait.rectTransform, $"+{shot.BlockGained} 방어", BlockColor); Sound.Play(SoundId.BlockGain); }
                 if (shot.BurnApplied > 0) Pop(target, $"화상 +{shot.BurnApplied}", StatusColor);
                 if (shot.PoisonApplied > 0) Pop(target, $"독 +{shot.PoisonApplied}", StatusColor);
                 if (shot.WeakApplied > 0) Pop(target, $"약화 +{shot.WeakApplied}", StatusColor);
+                if (shot.BurnApplied > 0 || shot.PoisonApplied > 0 || shot.WeakApplied > 0) Sound.Play(SoundId.StatusApply);
                 if (shot.Killed)
                 {
+                    Sound.Play(SoundId.Kill);
                     Pop(target, shot.Bullet.killBonusGold > 0 ? $"처치! +{shot.Bullet.killBonusGold}G" : "처치!", HighlightColor);
                     view.image.color = EmptyColor;
                 }
@@ -226,16 +236,18 @@ namespace CowboyHunter.UI
                     {
                         case EnemyActionType.Attack:
                             StartCoroutine(BattleFx.Kick(rt, new Vector2(-24f, 0f)));
+                            Sound.Play(SoundId.EnemyAttack);
                             if (a.DamageDealt > 0)
                             {
                                 Pop(playerPortrait.rectTransform, $"-{a.DamageDealt}", DamageColor);
+                                Sound.Play(SoundId.PlayerHurt);
                                 StartCoroutine(BattleFx.Flash(playerPortrait, HitFlash));
                                 StartCoroutine(BattleFx.Shake(shakeRoot, _shakeOrigin, Mathf.Clamp(a.DamageDealt, 6, 20)));
                             }
                             else Pop(playerPortrait.rectTransform, "막음", BlockColor);
                             break;
-                        case EnemyActionType.Block: Pop(rt, $"+{a.Action.value} 방어", BlockColor); break;
-                        case EnemyActionType.Poison: Pop(playerPortrait.rectTransform, $"독 +{a.Action.value}", StatusColor); break;
+                        case EnemyActionType.Block: Pop(rt, $"+{a.Action.value} 방어", BlockColor); Sound.Play(SoundId.EnemyGuard); break;
+                        case EnemyActionType.Poison: Pop(playerPortrait.rectTransform, $"독 +{a.Action.value}", StatusColor); Sound.Play(SoundId.StatusApply); break;
                     }
                 }
                 SetBar(view.transform.Find("HpBar"), a.EnemyHp, enemy.Stats.MaxHp, a.EnemyBlock);
@@ -330,6 +342,7 @@ namespace CowboyHunter.UI
         {
             bool won = _session.Phase == BattlePhase.Won;
             if (!won && _session.Phase != BattlePhase.Lost) return;
+            Sound.Play(won ? SoundId.Victory : SoundId.Defeat);
 
             var message = won ? $"승리!\n{_session.Turn}턴, 남은 체력 {_session.Player.Hp}" : $"패배...\n{_session.Turn}턴에서 쓰러짐";
             var run = GameSession.Run;
@@ -345,6 +358,7 @@ namespace CowboyHunter.UI
         // 런 중이면 다음 화면(상점/결과)으로, 단독 실행이면 전투를 다시 시작한다.
         void OnResultButton()
         {
+            Sound.Play(SoundId.UiClick);
             var run = GameSession.Run;
             if (run == null)
             {

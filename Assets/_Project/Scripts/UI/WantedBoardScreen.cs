@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CowboyHunter.Audio;
 using CowboyHunter.Core;
 using TMPro;
 using UnityEngine;
@@ -29,6 +30,7 @@ namespace CowboyHunter.UI
             GameSession.Run ??= new RunState(fallbackConfig, new System.Random());
             var run = GameSession.Run;
             SaveSystem.Save(run);
+            Sound.PlayMusic(MusicId.Board);
 
             posterTemplate.gameObject.SetActive(false);
             for (int i = 0; i < run.Posters.Count; i++)
@@ -41,7 +43,7 @@ namespace CowboyHunter.UI
                 view.transform.Find("Text").GetComponent<TMP_Text>().text =
                     $"{poster.Enemy.displayName}\n{(poster.IsElite ? "[엘리트]  " : "")}{poster.Bounty} GOLD";
                 UiSprites.Show(UiSprites.Child(view, "Portrait"), poster.Enemy.sprite);
-                view.onClick.AddListener(() => { run.Accept(index); SceneManager.LoadScene(SceneNames.Battle); });
+                view.onClick.AddListener(() => { Sound.Play(SoundId.PosterSelect); run.Accept(index); SceneManager.LoadScene(SceneNames.Battle); });
             }
 
             bossButton.interactable = run.BossUnlocked;
@@ -53,7 +55,7 @@ namespace CowboyHunter.UI
             var bossPortrait = UiSprites.Child(bossButton, "Portrait");
             UiSprites.Show(bossPortrait, run.BossPoster.Enemy.sprite);
             bossPortrait.color = run.BossUnlocked ? Color.white : new Color(0.1f, 0.08f, 0.06f, 0.9f);
-            bossButton.onClick.AddListener(() => { run.AcceptBoss(); SceneManager.LoadScene(SceneNames.Battle); });
+            bossButton.onClick.AddListener(() => { Sound.Play(SoundId.PosterSelect); run.AcceptBoss(); SceneManager.LoadScene(SceneNames.Battle); });
 
             statusText.text = $"{run.Chapter.displayName} / {run.ChapterCount}   HP {run.PlayerHp}/{run.PlayerMaxHp}   {run.Gold} GOLD";
             remainingText.text = $"남은 적 : {run.RemainingEnemies}";
