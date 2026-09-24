@@ -27,6 +27,7 @@ namespace CowboyHunter.UI
         {
             GameSession.Run ??= new RunState(fallbackConfig, new System.Random());
             var run = GameSession.Run;
+            SaveSystem.Save(run);
 
             posterTemplate.gameObject.SetActive(false);
             for (int i = 0; i < run.Posters.Count; i++)

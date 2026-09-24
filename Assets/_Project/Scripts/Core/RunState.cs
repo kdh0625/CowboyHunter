@@ -250,6 +250,92 @@ namespace CowboyHunter.Core
             }
         }
 
+        // ── 저장 / 불러오기 ─────────────────────────
+
+        // 게시판과 상점에서만 저장한다. 전투 도중 저장은 지원하지 않는다.
+        public RunSaveData ToSaveData()
+        {
+            if (Phase != RunPhase.Board && Phase != RunPhase.Shop)
+                throw new InvalidOperationException($"{Phase} 단계에서는 저장할 수 없습니다.");
+
+            var d = new RunSaveData
+            {
+                phase = Phase,
+                chapterIndex = ChapterIndex,
+                remainingEnemies = RemainingEnemies,
+                playerHp = PlayerHp,
+                gold = Gold
+            };
+            foreach (var b in Deck) d.deck.Add(b.name);
+            foreach (var p in _posters) d.posters.Add(new PosterSave { enemy = p.Enemy.name, elite = p.IsElite });
+            foreach (RelicSlot slot in Enum.GetValues(typeof(RelicSlot))) d.equipped.Add(GetEquipped(slot)?.name ?? "");
+            foreach (var r in _inventory) d.inventory.Add(r.name);
+
+            if (Shop != null)
+            {
+                d.hasShop = true;
+                foreach (var o in Shop.Bullets) d.shop.bullets.Add(new OfferSave { bullet = o.Bullet.name, sold = o.Sold });
+                d.shop.relic = Shop.Relic != null ? Shop.Relic.name : "";
+                d.shop.relicSold = Shop.RelicSold;
+                d.shop.whiskeySold = Shop.WhiskeySold;
+                d.shop.removalUsed = Shop.RemovalUsed;
+            }
+            return d;
+        }
+
+        public static RunState FromSaveData(RunConfig config, RunSaveData d, Random rng)
+        {
+            if (d == null || d.version != RunSaveData.CurrentVersion) throw new InvalidOperationException("지원하지 않는 저장 파일입니다.");
+            if (d.phase != RunPhase.Board && d.phase != RunPhase.Shop) throw new InvalidOperationException($"{d.phase} 단계의 저장은 불러올 수 없습니다.");
+            if (d.phase == RunPhase.Shop && !d.hasShop) throw new InvalidOperationException("상점 정보가 없습니다.");
+            if (d.chapterIndex < 0 || d.chapterIndex >= config.chapters.Count) throw new InvalidOperationException("챕터 번호가 잘못되었습니다.");
+
+            var bullets = new Dictionary<string, BulletData>();
+            foreach (var e in config.startingDeck.entries) bullets[e.bullet.name] = e.bullet;
+            foreach (var b in config.shopBullets) bullets[b.name] = b;
+            var relics = new Dictionary<string, RelicData>();
+            foreach (var r in config.relicPool) relics[r.name] = r;
+            var enemies = new Dictionary<string, EnemyData>();
+            foreach (var ch in config.chapters)
+            {
+                foreach (var e in ch.normals) enemies[e.name] = e;
+                foreach (var e in ch.elites) enemies[e.name] = e;
+                enemies[ch.boss.name] = ch.boss;
+            }
+            T Find<T>(Dictionary<string, T> map, string name) =>
+                map.TryGetValue(name, out var v) ? v : throw new InvalidOperationException($"저장 파일의 '{name}'을(를) 찾을 수 없습니다.");
+
+            var run = new RunState(config, rng)
+            {
+                Phase = d.phase,
+                ChapterIndex = d.chapterIndex,
+                RemainingEnemies = d.remainingEnemies,
+                PlayerHp = d.playerHp,
+                Gold = d.gold
+            };
+            run.Deck.Clear();
+            foreach (var n in d.deck) run.Deck.Add(Find(bullets, n));
+            run._posters.Clear();
+            foreach (var p in d.posters) run._posters.Add(new WantedPoster(Find(enemies, p.enemy), p.elite, false));
+            for (int i = 0; i < d.equipped.Count; i++)
+                if (!string.IsNullOrEmpty(d.equipped[i])) run._equipped[(RelicSlot)i] = Find(relics, d.equipped[i]);
+            foreach (var n in d.inventory) run._inventory.Add(Find(relics, n));
+
+            if (d.hasShop)
+            {
+                var shop = new ShopStock
+                {
+                    Relic = string.IsNullOrEmpty(d.shop.relic) ? null : Find(relics, d.shop.relic),
+                    RelicSold = d.shop.relicSold,
+                    WhiskeySold = d.shop.whiskeySold,
+                    RemovalUsed = d.shop.removalUsed
+                };
+                foreach (var o in d.shop.bullets) shop.Bullets.Add(new BulletOffer { Bullet = Find(bullets, o.bullet), Sold = o.sold });
+                run.Shop = shop;
+            }
+            return run;
+        }
+
         void Require(RunPhase phase)
         {
             if (Phase != phase) throw new InvalidOperationException($"현재 단계({Phase})에서는 할 수 없습니다.");
